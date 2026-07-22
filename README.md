@@ -156,8 +156,3 @@ aipa-be/src/main/java/com/aipa
 | `DB_HOST` / `DB_PORT`         | `localhost` / `5432`    | PostgreSQL                  |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4318` | Traces                      |
 
----
-
-## License
-
-Demo / interview portfolio project — use freely with attribution.
