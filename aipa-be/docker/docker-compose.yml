@@ -1,0 +1,81 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: aipa-postgres
+    environment:
+      POSTGRES_DB: aipa
+      POSTGRES_USER: aipa
+      POSTGRES_PASSWORD: aipa
+    ports:
+      - "5432:5432"
+    volumes:
+      - aipa_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aipa -d aipa"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4:9
+    container_name: aipa-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@aipa.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.73.0
+    container_name: aipa-jaeger
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.128.0
+    container_name: aipa-otel-collector
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    ports:
+      - "4319:4318"
+    depends_on:
+      - jaeger
+
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: aipa-backend
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: aipa
+      DB_USER: aipa
+      DB_PASSWORD: aipa
+      AIPA_API_KEY: ${AIPA_API_KEY:-dev-api-key-change-me}
+      AIPA_AI_STUB: ${AIPA_AI_STUB:-true}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      JAVA_TOOL_OPTIONS: >-
+        -XX:+UseContainerSupport
+        -XX:MaxRAMPercentage=75.0
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+
+volumes:
+  aipa_pg_data:
