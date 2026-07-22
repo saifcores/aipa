@@ -1,0 +1,116 @@
+{
+  "info": {
+    "name": "AIPA — AI Payment Operations Assistant",
+    "description": "Read-only payment ops assistant API (Spring Boot + LangChain4j)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "apiKey", "value": "dev-api-key-change-me" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/actuator/health"
+      }
+    },
+    {
+      "name": "List transactions",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "X-API-Key", "value": "{{apiKey}}" }
+        ],
+        "url": "{{baseUrl}}/transactions"
+      }
+    },
+    {
+      "name": "Get transaction by id",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "X-API-Key", "value": "{{apiKey}}" }
+        ],
+        "url": "{{baseUrl}}/transactions/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3"
+      }
+    },
+    {
+      "name": "AI — Find TX45892",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-API-Key", "value": "{{apiKey}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"Où est la transaction TX45892 ?\"\n}"
+        },
+        "url": "{{baseUrl}}/ai/chat"
+      }
+    },
+    {
+      "name": "AI — Explain failure TX45893",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-API-Key", "value": "{{apiKey}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"Pourquoi la transaction TX45893 a échoué ?\"\n}"
+        },
+        "url": "{{baseUrl}}/ai/chat"
+      }
+    },
+    {
+      "name": "AI — Orange Money > 50000",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-API-Key", "value": "{{apiKey}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"Montre-moi les transactions Orange Money supérieures à 50 000 FCFA.\"\n}"
+        },
+        "url": "{{baseUrl}}/ai/chat"
+      }
+    },
+    {
+      "name": "AI — Failed today count",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-API-Key", "value": "{{apiKey}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"Combien de paiements ont échoué aujourd'hui ?\"\n}"
+        },
+        "url": "{{baseUrl}}/ai/chat"
+      }
+    },
+    {
+      "name": "AI — Customers with multiple failures",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-API-Key", "value": "{{apiKey}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"Quels clients ont eu plusieurs échecs cette semaine ?\"\n}"
+        },
+        "url": "{{baseUrl}}/ai/chat"
+      }
+    }
+  ]
+}
